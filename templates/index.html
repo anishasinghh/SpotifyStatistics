@@ -1,0 +1,9 @@
+<doctype html>
+    <html>
+        <p>{{ toptracks }}</p>
+        {% for x in tracklist %}
+        <p> {{x}} </p>
+        {% endfor %}
+        <p>{{ popularity }}</p>
+        <image src="{{url_for('static',filename = 'my_plot.png')}}"/>
+    </html>
