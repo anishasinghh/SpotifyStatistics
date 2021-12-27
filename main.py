@@ -95,20 +95,96 @@ def callback():
         else:
             tracklist.append(str(i+1) + ". " + track_names[i] + " by " + str(track_artists[i]) + "\n" )
         i=i+1
-    # print("Your top tracks are: ")
-    # print(tracklist)
-    average_popularity = statistics.mean(track_popularities)
-    # print("The average popularity of your top 10 tracks is " + str(average_popularity) + " out of 100")
-
-    x_pos = [i for i, _ in enumerate(track_names)]
-    plt.barh(x_pos, track_popularities, color='green')
-    plt.yticks(x_pos, track_names)
+    average_popularity_tracks = statistics.mean(track_popularities)
+    x_pos_tracks = [i for i, _ in enumerate(track_names)]
+    plt.barh(x_pos_tracks, track_popularities, color='green')
+    plt.yticks(x_pos_tracks, track_names)
     plt.xlim([0, 100])
-    plt.savefig(r'D:\Programming Files\SpotifyWrapped\templates\my_plot.png', bbox_inches = 'tight')
+    plt.savefig(r'D:\Programming Files\SpotifyWrapped\templates\tracks_plot.png', bbox_inches = 'tight')
+
+    #Get user's top artists
+    artists_response=requests.get(SPOTIFY_API_URL + "/me/top/artists?time_range=short_term&limit=10", headers=authorization_header)
+    artists_json=artists_response.json()
+    artists_items=artists_json['items']
+    artist_names=[]
+    artist_ids=[]
+    artist_popularities=[]
+    artist_list=[]
+    i=0
+    while i<len(artists_items):
+        artist_names.append(artists_items[i]['name'])
+        artist_ids.append(artists_items[i]['id'])
+        artist_popularities.append(artists_items[i]['popularity'])
+        if i==len(artists_items)-1:
+            artist_list.append(str(i+1) + ". " + str(artist_names[i]))
+        else:
+            artist_list.append(str(i+1) + ". " + str(artist_names[i]) + "\n" )
+        i=i+1
+    average_popularity_artists = statistics.mean(artist_popularities)
+    x_pos_artists = [i for i, _ in enumerate(track_names)]
+    plt.barh(x_pos_artists, artist_popularities, color='green')
+    plt.yticks(x_pos_artists, artist_names)
+    plt.xlim([0, 100])
+    plt.savefig(r'D:\Programming Files\SpotifyWrapped\templates\artists_plot.png', bbox_inches = 'tight')
+
+    #Find average metrics of top 10 tracks
+    ids = ""
+    i=0
+    while i<len(track_ids):
+        ids+=track_ids[i] + ","
+        i=i+1
+    metrics_response = requests.get(SPOTIFY_API_URL + "/audio-features?ids="+ids, headers=authorization_header)
+    metrics_json = metrics_response.json()
+    metrics_audiofeatures = metrics_json['audio_features']
+
+    danceability = []
+    energy = []
+    loudness = []
+    acousticness= []
+    instrumentalness = []
+    liveness = []
+    valence = []
+    tempo = []
+
+    i=0
+    while i<len(metrics_audiofeatures):
+        danceability.append(metrics_audiofeatures[i]['danceability'])
+        energy.append(metrics_audiofeatures[i]['energy'])
+        loudness.append(metrics_audiofeatures[i]['loudness'])
+        acousticness.append(metrics_audiofeatures[i]['acousticness'])
+        instrumentalness.append(metrics_audiofeatures[i]['instrumentalness'])
+        liveness.append(metrics_audiofeatures[i]['liveness'])
+        valence.append(metrics_audiofeatures[i]['valence'])
+        tempo.append(metrics_audiofeatures[i]['tempo'])
+        i=i+1
+    
+    average_danceability = round(statistics.mean(danceability),2)
+    average_energy = round(statistics.mean(energy),2)
+    average_loudness = round(statistics.mean(loudness),2)
+    average_acousticness = round(statistics.mean(acousticness),2)
+    average_instrumentalness = round(statistics.mean(instrumentalness),2)
+    average_liveness = round(statistics.mean(liveness),2)
+    average_valence = round(statistics.mean(valence),2)
+    average_tempo = round(statistics.mean(tempo),2)
+
+    tracks_popularity_string = "The average popularity of your top 10 tracks is " + str(average_popularity_tracks) + " out of 100."
+    artists_popularity_string = "The average popularity of your top 10 artists is " + str(average_popularity_artists) + " out of 100."
+
+    metrics_array = ["","","","","","","","",""]
+    metrics_array[0] = "The average danceability of your top 10 tracks is " + str(average_danceability) + " on a scale from 0 to 1."
+    metrics_array[1] = "The average energy of your top 10 tracks is " + str(average_energy) + " on a scale from 0 to 1."
+    metrics_array[2] = "The average loudness of your top 10 tracks is " + str(average_loudness) + " decibels (on a scale from -60 and 0 db)."
+    metrics_array[3] = "The average acousticness of your top 10 tracks is " + str(average_acousticness) + " on a scale from 0 to 1"
+    metrics_array[4] = "The average instrumentalness of your top 10 tracks is " + str(average_instrumentalness) + " on a scale from 0 to 1, where the closer the instrumentalness value is to 1.0, the greater likelihood the track contains no vocal content."
+    metrics_array[5] = "The average liveness of your top 10 tracks is " + str(average_liveness) + " on a scale from 0 to 1, where higher liveness values represent an increased probability that the track was performed live."
+    metrics_array[6] = "The average valence of your top 10 tracks is " + str(average_valence) + " on a scale from 0 to 1."
+    metrics_array[7] = "The average tempo of your top 10 tracks is " + str(average_tempo) + " beats per minute."
+
+    
 
 
     # Combine profile and playlist data to display
-    template = render_template("index.html", toptracks="Your top tracks are:", tracklist=tracklist, popularity="The average popularity of your top 10 tracks is " + str(average_popularity) + " out of 100.")
+    template = render_template("index.html", tracklist=tracklist, tracks_popularity=tracks_popularity_string, artistlist=artist_list, artists_popularity=artists_popularity_string, metricslist=metrics_array)
     return template
 
 

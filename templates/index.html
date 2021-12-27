@@ -1,9 +1,20 @@
 <doctype html>
     <html>
-        <p>{{ toptracks }}</p>
+        <p>Your top tracks are:</p>
         {% for x in tracklist %}
         <p> {{x}} </p>
         {% endfor %}
-        <p>{{ popularity }}</p>
-        <image src="{{url_for('static',filename = 'my_plot.png')}}"/>
+        <p>{{ tracks_popularity }}</p>
+        <image src="{{url_for('static',filename = 'tracks_plot.png')}}"/>
+        <p>Your top artists are:</p>
+        {% for x in artistlist %}
+        <p> {{x}} </p>
+        {% endfor %}
+        <p>{{ artists_popularity }}</p>
+        <image src="{{url_for('static',filename = 'artists_plot.png')}}"/>
+        <p>The average metrics of your top 10 tracks are the following:</p>
+        {% for x in metricslist %}
+        <p> {{x}} </p>
+        {% endfor %}
+
     </html>
