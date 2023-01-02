@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Spotify Statistics</title>
+    <link href="styles.css" rel="stylesheet"/>
+</head>
+
+<body>
+<main>
+    <header>
+        <div class="welcome"><h1>Welcome to Your</h1></div>
+        <h1>Spotify Statistics</h1>
+    </header>
+
+    <h3>Here are your <strong>top tracks</strong> over the last month:</h3>
+    {% for x in tracklist %}
+        <p> {{ x }} </p>
+    {% endfor %}
+    <p>{{ tracks_popularity }}</p>
+    <image src="{{ url_for('static',filename = 'tracks_plot.png') }}"/>
+    <h3>Your <strong>top artists</strong> are:</h3>
+    {% for x in artistlist %}
+        <p> {{ x }} </p>
+    {% endfor %}
+    <p>{{ artists_popularity }}</p>
+    <image src="{{ url_for('static',filename = 'artists_plot.png') }}"/>
+    <h3>The <strong>average metrics</strong> of your top 10 tracks are the following:</h3>
+    {% for x in metricslist %}
+        <p> {{ x }} </p>
+    {% endfor %}
+</main>
+</body>
+</html>
